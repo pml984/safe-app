@@ -7,8 +7,7 @@ export const setMapResults = (mapResults) => ({
 
 const initialState = {
   center: [39.904, -77.016],
-  markers: [],
-  title: ''
+  markers: []
 }
 
 export default (state = initialState, {payload = {}, type, ...action}) => {

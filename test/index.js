@@ -6,6 +6,10 @@ require('./modules/analytic.spec')
 
 require('./modules/analytics.spec')
 
+// bar chart
+
+require('./modules/bar-chart.spec')
+
 // dialog
 require('./modules/dialog.spec')
 

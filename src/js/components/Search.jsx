@@ -38,25 +38,6 @@ const style = {
 
 const size = 'col-xs-12 col-sm-12'
 const zoomControlPosition = 'topleft'
-// const chartTitle = 'Cities in Colorado'
-// const chartSeries = [{
-//   name: 'Cities',
-//   colorByPoint: true,
-//   data: [{
-//     name: 'Littleton',
-//     y: 2
-//   }, {
-//     name: 'Denver',
-//     y: 2
-//   }, {
-//     name: 'Aurora',
-//     y: 1
-//   }, {
-//     name: 'Golden',
-//     y: 1
-//   }]
-// }]
-// const chartDrilldown = {}
 
 @Hydrateable('Search', ['filters', 'source'])
 class Search extends Component {
@@ -100,16 +81,15 @@ class Search extends Component {
     
     dispatch(setCategory(category))
     
-    searchResults.data.forEach(function (row) {
+    searchResults.data.forEach((row) => {
       if (dataObj[row[category]] === undefined) {
         dataObj[row[category]] = 1
-      }
-      else {
+      } else {
         dataObj[row[category]] = dataObj[row[category]] + 1
       }
     })
       
-    const newData = Object.keys(dataObj).map(function (key) {
+    const newData = Object.keys(dataObj).map((key) => {
       return {
         name: key,
         y: dataObj[key]
@@ -123,11 +103,9 @@ class Search extends Component {
         data: newData
       }],
       title: {
-        text: 'Count of ' + category.toUpperCase()
+        text: 'Unique count of ' + category.toUpperCase()
       }
     }
-    
-    console.log('bar chart: ' + JSON.stringify(barChart))
     
     dispatch(setBarChart(barChart))
   }
@@ -304,7 +282,7 @@ class Search extends Component {
                         <Map
                           center={mapResults.center}
                           markers={mapResults.markers}
-                          title={mapResults.title}
+                          title=''
                           zoomControlPosition={zoomControlPosition}
                         />
                       </div>

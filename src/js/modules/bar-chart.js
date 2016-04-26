@@ -11,7 +11,9 @@ const initialState = {
   plotOptions: {},
   series: [],
   subtitle: {},
-  title: {},
+  title: {
+    text: ''
+  },
   tooltip: {},
   xAxis: {},
   yAxis: {}
