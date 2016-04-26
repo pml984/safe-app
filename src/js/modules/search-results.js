@@ -20,7 +20,7 @@ export const fetchSearchResultsSuccess = (data) => ({
 export const fetchSearchResults = (source, filters) =>
   (dispatch) => {
     dispatch(fetchSearchResultsRequest(source, filters))
-    
+
     return fetch(`${apiUri}/sources/${source}/query`,
       {
         method: 'POST',

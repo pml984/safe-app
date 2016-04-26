@@ -1,4 +1,5 @@
 import analytics from './analytics'
+import barChart from './bar-chart'
 import category from './category'
 import {combineReducers} from 'redux'
 import dashboards from './dashboards'
@@ -42,6 +43,7 @@ export const actions = {
 export const rootReducer = combineReducers({
   analytic: hydrateable(analytic, HYDRATE_ANALYTIC),
   analytics,
+  barChart,
   category,
   dialog,
   dashboards,

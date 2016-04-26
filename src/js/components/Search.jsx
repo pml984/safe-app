@@ -5,6 +5,7 @@ import {fetchSources} from '../modules/sources'
 import FilterCriteria from './FilterCriteria'
 import {Hydrateable} from '../decorators'
 import {SelectField} from './SelectField'
+import {setBarChart} from '../modules/bar-chart'
 import {setCategory} from '../modules/category'
 import {setLabel} from '../modules/label'
 import {setLatitude} from '../modules/latitude'
@@ -35,32 +36,32 @@ const style = {
   }
 }
 
-const mapTitle = 'Cities'
 const size = 'col-xs-12 col-sm-12'
 const zoomControlPosition = 'topleft'
-const chartTitle = 'Cities in Colorado'
-const chartSeries = [{
-  name: 'Cities',
-  colorByPoint: true,
-  data: [{
-    name: 'Littleton',
-    y: 2
-  }, {
-    name: 'Denver',
-    y: 2
-  }, {
-    name: 'Aurora',
-    y: 1
-  }, {
-    name: 'Golden',
-    y: 1
-  }]
-}]
-const chartDrilldown = {}
+// const chartTitle = 'Cities in Colorado'
+// const chartSeries = [{
+//   name: 'Cities',
+//   colorByPoint: true,
+//   data: [{
+//     name: 'Littleton',
+//     y: 2
+//   }, {
+//     name: 'Denver',
+//     y: 2
+//   }, {
+//     name: 'Aurora',
+//     y: 1
+//   }, {
+//     name: 'Golden',
+//     y: 1
+//   }]
+// }]
+// const chartDrilldown = {}
 
 @Hydrateable('Search', ['filters', 'source'])
 class Search extends Component {
   static propTypes = {
+    barChart: PropTypes.object,
     category: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
     filters: PropTypes.array.isRequired,
@@ -94,9 +95,41 @@ class Search extends Component {
   }
 
   onChangeCategory (ev, index, category) {
-    const {dispatch} = this.props
-
+    const {dispatch, searchResults} = this.props
+    const dataObj = {}
+    
     dispatch(setCategory(category))
+    
+    searchResults.data.forEach(function (row) {
+      if (dataObj[row[category]] === undefined) {
+        dataObj[row[category]] = 1
+      }
+      else {
+        dataObj[row[category]] = dataObj[row[category]] + 1
+      }
+    })
+      
+    const newData = Object.keys(dataObj).map(function (key) {
+      return {
+        name: key,
+        y: dataObj[key]
+      }
+    })
+    
+    const barChart = {
+      series: [{
+        name: category,
+        colorByPoint: true,
+        data: newData
+      }],
+      title: {
+        text: 'Count of ' + category.toUpperCase()
+      }
+    }
+    
+    console.log('bar chart: ' + JSON.stringify(barChart))
+    
+    dispatch(setBarChart(barChart))
   }
 
   onChangeLabel (ev, index, label) {
@@ -167,7 +200,7 @@ class Search extends Component {
   }
 
   render () {
-    const {category, label, latitude, longitude, mapResults, searchResults, source} = this.props
+    const {barChart, category, label, latitude, longitude, mapResults, searchResults, source} = this.props
     const filterStyle = source === ''
       ? style.hidden
       : {}
@@ -271,7 +304,7 @@ class Search extends Component {
                         <Map
                           center={mapResults.center}
                           markers={mapResults.markers}
-                          title={mapTitle}
+                          title={mapResults.title}
                           zoomControlPosition={zoomControlPosition}
                         />
                       </div>
@@ -286,9 +319,9 @@ class Search extends Component {
                         onChange={this.onChangeCategory}
                       />
                       <BarChart
-                        drilldown={chartDrilldown}
-                        series={chartSeries}
-                        title={chartTitle}
+                        drilldown={barChart.drilldown}
+                        series={barChart.series}
+                        title={barChart.title.text}
                       />
                     </Tab>
                   </Tabs>
@@ -303,6 +336,7 @@ class Search extends Component {
 }
 
 export default connect((state) => ({
+  barChart: state.barChart,
   category: state.category,
   filters: state.filters,
   label: state.label,
