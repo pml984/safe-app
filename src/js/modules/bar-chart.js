@@ -6,17 +6,8 @@ export const setBarChart = (barChart) => ({
 })
 
 const initialState = {
-  drilldown: {},
-  legend: {},
-  plotOptions: {},
-  series: [],
-  subtitle: {},
-  title: {
-    text: ''
-  },
-  tooltip: {},
-  xAxis: {},
-  yAxis: {}
+  data: {},
+  options: {}
 }
 
 export default (state = initialState, {payload = {}, type, ...action}) => {

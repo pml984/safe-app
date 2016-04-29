@@ -13,7 +13,7 @@ import {setLongitude} from '../modules/longitude'
 import {setMapResults} from '../modules/map-results'
 import {setSource} from '../modules/source'
 import SourceSelect from './SourceSelect'
-import {BarChart, BasicDataTable, Map} from 'safe-framework'
+import {BarChart, DataTable, Map} from 'safe-framework'
 import {header, main} from '../styles/common'
 import {RaisedButton, Tab, Tabs} from 'material-ui'
 import React, {Component, PropTypes} from 'react'
@@ -89,25 +89,44 @@ class Search extends Component {
       }
     })
       
-    const newData = Object.keys(dataObj).map((key) => {
-      return {
-        name: key,
-        y: dataObj[key]
-      }
-    })
+    const newData = Object.keys(dataObj).map((key) => ({
+      name: key,
+      y: dataObj[key]
+    }))
     
-    const barChart = {
-      series: [{
-        name: category,
-        colorByPoint: true,
-        data: newData
-      }],
+    const options = {
       title: {
         text: 'Unique count of ' + category.toUpperCase()
+      },
+      scales: {
+        xAxis: [{
+          scaleLabel: {
+            display: true
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true
+          }
+        }]
       }
     }
     
-    dispatch(setBarChart(barChart))
+    const chartData = {
+      data: {
+        data: newData,
+        xAxis: [{
+          dataProperty: 'name'
+        }],
+        yAxis: [{
+          dataProperty: 'y',
+          label: 'Count'
+        }]
+      },
+      options: options
+    }
+    
+    dispatch(setBarChart(chartData))
   }
 
   onChangeLabel (ev, index, label) {
@@ -217,16 +236,23 @@ class Search extends Component {
           </div>
           {(() => {
             if (searchResults.data && searchResults.data.length > 0) {
-              const columns = Object.keys(searchResults.data[0]).map((data) => ({
-                title: data.toUpperCase(),
-                data
-              }))
-
-              const items = Object.keys(searchResults.data[0]).map((data, i) => ({
-                value: i,
-                primaryText: data
-              }))
-
+              const columns = []
+              const items = []
+              
+              Object.keys(searchResults.data[0]).forEach((data, i) => {
+                if (!data.startsWith('_')) {
+                  columns.push({
+                    headerName: data.toUpperCase(),
+                    field: data
+                  })
+                    
+                  items.push({
+                    value: i,
+                    primaryText: data
+                  })
+                }
+              })
+              
               const lat = searchResults.data[0][latitude]
               const long = searchResults.data[0][longitude]
 
@@ -237,9 +263,11 @@ class Search extends Component {
                 <div className={size}>
                   <Tabs>
                     <Tab label='Data'>
-                      <BasicDataTable
+                      <DataTable
                         columns={columns}
                         data={searchResults.data}
+                        enableColResize='true'
+                        enableSorting='true'
                       />
                     </Tab>
                     <Tab label='Map'>
@@ -296,11 +324,17 @@ class Search extends Component {
                         value={category}
                         onChange={this.onChangeCategory}
                       />
-                      <BarChart
-                        drilldown={barChart.drilldown}
-                        series={barChart.series}
-                        title={barChart.title.text}
-                      />
+                      {(() => {
+                        if (barChart.data && barChart.data.data && barChart.data.data.length > 0) {
+                          return (
+                            <BarChart
+                              data={barChart.data}
+                              options={barChart.options}
+                              title={'Unique count of ' + category}
+                            />
+                          )
+                        }
+                      })()}
                     </Tab>
                   </Tabs>
                 </div>
