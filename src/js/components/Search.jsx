@@ -6,13 +6,23 @@ import {fetchSearchResults} from '../modules/search-results'
 import {fetchSources} from '../modules/sources'
 import FilterCriteria from './FilterCriteria'
 import {Hydrateable} from '../decorators'
+import {metricsAccount} from '../../../config'
 import RaisedButton from 'material-ui/RaisedButton'
 import {SelectField} from './SelectField'
+import {sendMetrics} from '../modules/metrics'
 import {setSource} from '../modules/source'
 import Tab from 'material-ui/Tabs/Tab'
 import Tabs from 'material-ui/Tabs/Tabs'
 import {header, main, verticalTop} from '../styles/common'
 import React, {Component, PropTypes} from 'react'
+
+const event = {
+  group: 'pageView',
+  account: metricsAccount,
+  attributes: {
+    page: 'Search'
+  }
+}
 
 const style = {
   hidden: {
@@ -51,7 +61,8 @@ class Search extends Component {
     filters: PropTypes.array.isRequired,
     searchResults: PropTypes.object.isRequired,
     source: PropTypes.string.isRequired,
-    sources: PropTypes.object.isRequired
+    sources: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
   }
 
   constructor (props) {
@@ -76,11 +87,14 @@ class Search extends Component {
   }
 
   componentWillMount () {
-    const {dispatch, searchResults} = this.props
+    const {dispatch, searchResults, user} = this.props
 
     this.updateColumns(searchResults)
 
     dispatch(fetchSources())
+    
+    event.attributes.user = user.data.username
+    dispatch(sendMetrics(event))
   }
 
   componentWillReceiveProps (nextProps) {
@@ -192,5 +206,6 @@ export default connect((state) => ({
   mapResults: state.mapResults,
   searchResults: state.searchResults,
   source: state.source,
-  sources: state.sources
+  sources: state.sources,
+  user: state.user
 }))(Search)

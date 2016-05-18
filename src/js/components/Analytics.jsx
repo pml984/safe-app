@@ -5,7 +5,9 @@ import {fetchSources} from '../modules/sources'
 import {fetchVisualizationTypes} from '../modules/visualization-types'
 import FilterCriteria from './FilterCriteria'
 import {Hydrateable} from '../decorators'
+import {metricsAccount} from '../../../config'
 import {SelectField} from './SelectField'
+import {sendMetrics} from '../modules/metrics'
 import {setAnalytic} from '../modules/analytic'
 import {setSource} from '../modules/source'
 import {setVisualization} from '../modules/visualization'
@@ -15,6 +17,14 @@ import React, {Component, PropTypes} from 'react'
 const style = {
   hidden: {
     display: 'none'
+  }
+}
+
+const event = {
+  group: 'pageView',
+  account: metricsAccount,
+  attributes: {
+    page: 'Analytics'
   }
 }
 
@@ -28,6 +38,7 @@ class Analytics extends Component {
     filters: PropTypes.array.isRequired,
     source: PropTypes.string.isRequired,
     sources: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
     visualization: PropTypes.string.isRequired,
     visualizationTypes: PropTypes.object.isRequired
   }
@@ -43,9 +54,12 @@ class Analytics extends Component {
   }
 
   componentWillMount () {
-    const {dispatch} = this.props
+    const {dispatch, user} = this.props
 
     dispatch(fetchSources())
+    
+    event.attributes.user = user.data.username
+    dispatch(sendMetrics(event))
   }
 
   onChangeAnalytic (ev, index, analytic) {
@@ -152,6 +166,7 @@ export default connect((state) => ({
   filters: state.filters,
   source: state.source,
   sources: state.sources,
+  user: state.user,
   visualization: state.visualization,
   visualizationTypes: state.visualizationTypes
 }))(Analytics)

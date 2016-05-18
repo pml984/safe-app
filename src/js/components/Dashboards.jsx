@@ -7,7 +7,9 @@ import {editDashboard} from '../modules/edit-dashboard'
 import {fetchDashboards} from '../modules/dashboards'
 import FlatButton from 'material-ui/FlatButton'
 import {Hydrateable} from '../decorators'
+import {metricsAccount} from '../../../config'
 import {SelectField} from './SelectField'
+import {sendMetrics} from '../modules/metrics'
 import {setDashboard} from '../modules/dashboard'
 import TextField from 'material-ui/TextField'
 import {
@@ -27,6 +29,14 @@ import React, {Component, PropTypes} from 'react'
 
 const style = {
   width: '400px'
+}
+
+const event = {
+  group: 'pageView',
+  account: metricsAccount,
+  attributes: {
+    page: 'Dashboards'
+  }
 }
 
 const getDashboardById = (dashboards, id) => {
@@ -51,7 +61,8 @@ class Dashboards extends Component {
     dashboards: PropTypes.object.isRequired,
     deleteDashboardDialog: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    editDashboardDialog: PropTypes.object.isRequired
+    editDashboardDialog: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
   }
 
   constructor (props) {
@@ -76,9 +87,12 @@ class Dashboards extends Component {
   }
 
   componentWillMount () {
-    const {dispatch} = this.props
+    const {dispatch, user} = this.props
 
     dispatch(fetchDashboards())
+    
+    event.attributes.user = user.data.username
+    dispatch(sendMetrics(event))
   }
 
   changeCreateDialog (property, event) {
@@ -288,5 +302,6 @@ export default connect((state) => ({
   dashboard: state.dashboard,
   dashboards: state.dashboards,
   deleteDashboardDialog: state.deleteDashboardDialog,
-  editDashboardDialog: state.editDashboardDialog
+  editDashboardDialog: state.editDashboardDialog,
+  user: state.user
 }))(Dashboards)
