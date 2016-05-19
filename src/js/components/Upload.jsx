@@ -18,7 +18,6 @@ import {
 
 const event = {
   group: 'pageView',
-  account: metricsAccount,
   attributes: {
     page: 'Upload'
   }

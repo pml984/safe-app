@@ -22,7 +22,6 @@ const style = {
 
 const event = {
   group: 'pageView',
-  account: metricsAccount,
   attributes: {
     page: 'Analytics'
   }

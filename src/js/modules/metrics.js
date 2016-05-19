@@ -23,6 +23,8 @@ export const sendMetricsSuccess = (data) => ({
 
 export const sendMetrics = (data) =>
   (dispatch) => {
+    console.log('event: ' + JSON.stringify(data))
+    
     return fetch(`${apiUri}/metrics`,
       {
         method: 'POST',

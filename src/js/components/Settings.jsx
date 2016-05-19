@@ -6,7 +6,6 @@ import React, {Component, PropTypes} from 'react'
 
 const event = {
   group: 'pageView',
-  account: metricsAccount,
   attributes: {
     page: 'Settings'
   }
