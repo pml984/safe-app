@@ -61,7 +61,7 @@ module.exports = function (app) {
     res.send(fixtures.searchResults)
   })
   app.post('/api/metrics', function (req, res) {
-    res.send(req.body.data)
+    res.status(200).json(req.body.events)
   })
   // TO DO *****************************
   // LIST OF FILTERS ENABLED FOR A SPECIFIC DATA SOURCE
