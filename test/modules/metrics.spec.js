@@ -18,14 +18,10 @@ import {
 
 const middlewares = [thunk]
 const mockStore = configureStore(middlewares)
-const event = {
-  group: 'pageView',
-  account: '1234567890',
-  attributes: {
-    page: 'Search',
-    user: 'user1'
-  }
-}
+const events = [
+  {group: 'pageView', account: '1234567890', attributes: {page: 'Search', user: 'user1'}},
+  {group: 'pageView', account: '1234567890', attributes: {page: 'Analytics', user: 'user1'}}
+]
 
 describe('metrics actions', () => {
   describe('sync actions', () => {
@@ -44,16 +40,16 @@ describe('metrics actions', () => {
         type: REQUEST
       }
 
-      expect(sendMetricsRequest(event)).toEqual(expectedAction)
+      expect(sendMetricsRequest(events)).toEqual(expectedAction)
     })
 
     it('sendMetricsSuccess should create a SUCCESS action', () => {
       const expectedAction = {
-        payload: {data: {}},
+        payload: {data: []},
         receivedAt: null,
         type: SUCCESS
       }
-      const action = sendMetricsSuccess({})
+      const action = sendMetricsSuccess([])
 
       expectedAction.receivedAt = action.receivedAt
       
@@ -68,11 +64,14 @@ describe('metrics actions', () => {
 
     it('sendMetrics creates a SUCCESS action on success', (done) => {
       nock(apiUri)
-        .post(`/metrics`)
-        .reply(200, {group: 'pageView', account: '1234567890', attributes: {page: 'Search', user: 'user1'}})
+        .post('/metrics')
+        .reply(200, [
+                      {group: 'pageView', account: '1234567890', attributes: {page: 'Search', user: 'user1'}},
+                      {group: 'pageView', account: '1234567890', attributes: {page: 'Analytics', user: 'user1'}}
+        ])
 
       const initialState = {
-        data: {}
+        data: []
       }
       const requestAction = {
         type: REQUEST
@@ -80,21 +79,16 @@ describe('metrics actions', () => {
       const receiveAction = {
         type: SUCCESS,
         payload: {
-          data: {
-            group: 'pageView',
-            account: '1234567890',
-            attributes: {
-              page: 'Search',
-              user: 'user1'
-            }
-          }
+          data: [
+            {group: 'pageView', account: '1234567890', attributes: {page: 'Search', user: 'user1'}},
+            {group: 'pageView', account: '1234567890', attributes: {page: 'Analytics', user: 'user1'}}
+          ]
         },
         receivedAt: null
       }
       const store = mockStore(initialState)
       
-      console.log('before dispatch ')
-      store.dispatch(sendMetrics(event))
+      store.dispatch(sendMetrics(events))
         .then(() => {
           const actions = store.getActions()
           const expectedActions = [
@@ -112,20 +106,21 @@ describe('metrics actions', () => {
       nock(apiUri)
         .post('/metrics')
         .reply(500)
-
+        
+      const error = new Error('NetworkError')
       const initialState = {
-        data: {}
+        data: []
       }
       const requestAction = {
         type: REQUEST
       }
       const failureAction = {
-        payload: {},
+        payload: {error},
         type: FAILURE
       }
       const store = mockStore(initialState)
 
-      store.dispatch(sendMetrics(event))
+      store.dispatch(sendMetrics(events))
         .then(() => {
           const actions = store.getActions()
           const expectedActions = [
@@ -134,7 +129,7 @@ describe('metrics actions', () => {
           ]
 
           expectedActions[1].payload.error = actions[1].payload.error
-
+          
           expect(actions).toEqual(expectedActions)
           done()
         })
@@ -145,7 +140,7 @@ describe('metrics actions', () => {
 describe('metrics reducer', () => {
   it('should return the initial state', () => {
     const stateAfter = {
-      data: {},
+      data: [],
       error: undefined,
       isFetching: false,
       lastUpdated: null
@@ -161,7 +156,7 @@ describe('metrics reducer', () => {
       type: FAILURE
     }
     const stateAfter = {
-      data: {},
+      data: [],
       error,
       isFetching: false,
       lastUpdated: null
@@ -175,7 +170,7 @@ describe('metrics reducer', () => {
       type: REQUEST
     }
     const stateAfter = {
-      data: {},
+      data: [],
       error: undefined,
       isFetching: true,
       lastUpdated: null
@@ -185,14 +180,10 @@ describe('metrics reducer', () => {
   })
 
   it('should handle SUCCESS', () => {
-    const data = {
-      group: 'pageView',
-      account: '1234567890',
-      attributes: {
-        page: 'Search',
-        user: 'user1'
-      }
-    }
+    const data = [
+      {group: 'pageView', account: '1234567890', attributes: {page: 'Search', user: 'user1'}},
+      {group: 'pageView', account: '1234567890', attributes: {page: 'Analytics', user: 'user1'}}
+    ]
     
     const action = {
       payload: {data},

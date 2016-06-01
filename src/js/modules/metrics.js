@@ -23,7 +23,7 @@ export const sendMetricsSuccess = (data) => ({
 
 export const sendMetrics = (data) =>
   (dispatch) => {
-    console.log('event: ' + JSON.stringify(data))
+    dispatch(sendMetricsRequest())
     
     return fetch(`${apiUri}/metrics`,
       {
@@ -32,7 +32,7 @@ export const sendMetrics = (data) =>
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({events: data})
       })
       .then(checkFetchStatus)
       .then((response) => response.json())
@@ -42,7 +42,7 @@ export const sendMetrics = (data) =>
   
 // REDUCER
 const initialState = {
-  data: {},
+  data: [],
   error: undefined,
   isFetching: false,
   lastUpdated: null

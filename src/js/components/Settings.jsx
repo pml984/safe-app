@@ -1,15 +1,7 @@
 import {connect} from 'react-redux'
-import {metricsAccount} from '../../../config'
 import {sendMetrics} from '../modules/metrics'
 import {header, main} from '../styles/common'
 import React, {Component, PropTypes} from 'react'
-
-const event = {
-  group: 'pageView',
-  attributes: {
-    page: 'Settings'
-  }
-}
 
 class Settings extends Component {
   static propTypes = {
@@ -19,9 +11,15 @@ class Settings extends Component {
 
   componentWillMount () {
     const {dispatch, user} = this.props
-   
-    event.attributes.user = user.data.username
-    dispatch(sendMetrics(event))
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Settings',
+        user: user.data.username
+      }
+    }
+    
+    dispatch(sendMetrics([event]))
   }
   
   render () {

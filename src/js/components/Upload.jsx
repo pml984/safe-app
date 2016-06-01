@@ -4,8 +4,6 @@ import DropDownMenu from 'material-ui/DropDownMenu'
 import {FileInput} from 'safe-framework'
 import FlatButton from 'material-ui/FlatButton'
 import MenuItem from 'material-ui/MenuItem'
-import {metricsAccount} from '../../../config'
-import Papa from 'papaparse'
 import {sendMetrics} from '../modules/metrics'
 import {toggleDialog} from '../modules/dialog'
 import {header, main} from '../styles/common'
@@ -15,13 +13,6 @@ import {
   setUploadDataTypeByHeaderName,
   setUploadDataTypes
 } from '../modules/upload'
-
-const event = {
-  group: 'pageView',
-  attributes: {
-    page: 'Upload'
-  }
-}
 
 const getFileExtension = (fileName) =>
   // From http://stackoverflow.com/a/12900504
@@ -51,11 +42,16 @@ class Upload extends Component {
 
   componentWillUnmount () {
     const {dispatch, user} = this.props
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Upload',
+        user: user.data.username
+      }
+    }
 
     dispatch(resetUploadDataTypes())
-    
-    event.attributes.user = user.data.username
-    dispatch(sendMetrics(event))
+    dispatch(sendMetrics([event]))
   }
 
   shouldRejectFile (file) {

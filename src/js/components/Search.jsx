@@ -6,7 +6,6 @@ import {fetchSearchResults} from '../modules/search-results'
 import {fetchSources} from '../modules/sources'
 import FilterCriteria from './FilterCriteria'
 import {Hydrateable} from '../decorators'
-import {metricsAccount} from '../../../config'
 import RaisedButton from 'material-ui/RaisedButton'
 import {SelectField} from './SelectField'
 import {sendMetrics} from '../modules/metrics'
@@ -15,13 +14,6 @@ import Tab from 'material-ui/Tabs/Tab'
 import Tabs from 'material-ui/Tabs/Tabs'
 import {header, main, verticalTop} from '../styles/common'
 import React, {Component, PropTypes} from 'react'
-
-const event = {
-  group: 'pageView',
-  attributes: {
-    page: 'Search'
-  }
-}
 
 const style = {
   hidden: {
@@ -87,13 +79,18 @@ class Search extends Component {
 
   componentWillMount () {
     const {dispatch, searchResults, user} = this.props
-
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Search',
+        user: user.data.username
+      }
+    }
+    
     this.updateColumns(searchResults)
 
     dispatch(fetchSources())
-    
-    event.attributes.user = user.data.username
-    dispatch(sendMetrics(event))
+    dispatch(sendMetrics([event]))
   }
 
   componentWillReceiveProps (nextProps) {

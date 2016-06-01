@@ -5,7 +5,6 @@ import {fetchSources} from '../modules/sources'
 import {fetchVisualizationTypes} from '../modules/visualization-types'
 import FilterCriteria from './FilterCriteria'
 import {Hydrateable} from '../decorators'
-import {metricsAccount} from '../../../config'
 import {SelectField} from './SelectField'
 import {sendMetrics} from '../modules/metrics'
 import {setAnalytic} from '../modules/analytic'
@@ -17,13 +16,6 @@ import React, {Component, PropTypes} from 'react'
 const style = {
   hidden: {
     display: 'none'
-  }
-}
-
-const event = {
-  group: 'pageView',
-  attributes: {
-    page: 'Analytics'
   }
 }
 
@@ -54,11 +46,16 @@ class Analytics extends Component {
 
   componentWillMount () {
     const {dispatch, user} = this.props
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Analytics',
+        user: user.data.username
+      }
+    }
 
     dispatch(fetchSources())
-    
-    event.attributes.user = user.data.username
-    dispatch(sendMetrics(event))
+    dispatch(sendMetrics([event]))
   }
 
   onChangeAnalytic (ev, index, analytic) {

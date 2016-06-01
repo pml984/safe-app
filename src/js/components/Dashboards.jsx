@@ -7,7 +7,6 @@ import {editDashboard} from '../modules/edit-dashboard'
 import {fetchDashboards} from '../modules/dashboards'
 import FlatButton from 'material-ui/FlatButton'
 import {Hydrateable} from '../decorators'
-import {metricsAccount} from '../../../config'
 import {SelectField} from './SelectField'
 import {sendMetrics} from '../modules/metrics'
 import {setDashboard} from '../modules/dashboard'
@@ -29,13 +28,6 @@ import React, {Component, PropTypes} from 'react'
 
 const style = {
   width: '400px'
-}
-
-const event = {
-  group: 'pageView',
-  attributes: {
-    page: 'Dashboards'
-  }
 }
 
 const getDashboardById = (dashboards, id) => {
@@ -87,11 +79,16 @@ class Dashboards extends Component {
 
   componentWillMount () {
     const {dispatch, user} = this.props
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Dashboards',
+        user: user.data.username
+      }
+    }
 
     dispatch(fetchDashboards())
-    
-    event.attributes.user = user.data.username
-    dispatch(sendMetrics(event))
+    dispatch(sendMetrics([event]))
   }
 
   changeCreateDialog (property, event) {
@@ -175,10 +172,18 @@ class Dashboards extends Component {
   }
 
   selectDashboard (event, index, id) {
-    const {dispatch, dashboards} = this.props
+    const {dispatch, dashboards, user} = this.props
     const dashboard = getDashboardById(dashboards.data, id)
+    const dashboardEvent = {
+      group: 'selectedDashboard',
+      attributes: {
+        dashboard: dashboard.title,
+        user: user.data.username
+      }
+    }
 
     dispatch(setDashboard(dashboard))
+    dispatch(sendMetrics([dashboardEvent]))
   }
 
   render () {
