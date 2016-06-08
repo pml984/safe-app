@@ -1,4 +1,5 @@
 import {Map} from 'safe-framework'
+import {mapAttribution, mapUrl} from '../../../config'
 import React, {Component, PropTypes} from 'react'
 
 export class MapComponent extends Component {
@@ -32,12 +33,19 @@ export class MapComponent extends Component {
       data: baseData
     }
     
+    const tileLayerOptions = !mapUrl ? {} : {
+      attribution: mapAttribution,
+      transparent: true,
+      url: mapUrl
+    }
+    
     return (
       <Map
         baseLayer={baseLayer}
         center={center}
         dataOptions={visualizationParams}
         layers={layers}
+        tileLayerOptions={tileLayerOptions}
       />
     )
   }
