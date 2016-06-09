@@ -4,6 +4,10 @@
 
 ### Changes
 
+## 0.0.10(June 9, 2016)
+
+### Changes
+
 ## 0.0.9 (May 23, 2016)
 
 ### Changes
