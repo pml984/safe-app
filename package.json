@@ -1,8 +1,8 @@
 {
-  "name": "safe-app",
-  "version": "0.0.9",
+  "name": "safe-app-fork",
+  "version": "0.0.10",
   "description": "Safe App",
-  "repository": "https://github.com/jeffshaver/safe-app",
+  "repository": "https://github.com/pml984/safe-app",
   "scripts": {
     "build": "NODE_ENV=production webpack",
     "build:dev": "NODE_ENV=development webpack",
