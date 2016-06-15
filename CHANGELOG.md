@@ -1,5 +1,6 @@
 # safe-app ChangeLog
 
+asdf
 ## 0.0.10(June 9, 2016)
 
 ### Changes
