@@ -16,6 +16,7 @@ import label from './label'
 import latitude from './latitude'
 import longitude from './longitude'
 import mapResults from './map-results'
+import metrics from './metrics'
 import {routerReducer as routing} from 'react-router-redux'
 import searchResults from './search-results'
 import sources from './sources'
@@ -66,6 +67,7 @@ export const rootReducer = combineReducers({
   latitude,
   longitude,
   mapResults,
+  metrics,
   searchResults,
   source: hydrateable(source, HYDRATE_SOURCE),
   sources,

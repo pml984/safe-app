@@ -5,6 +5,7 @@ import {FileInput} from 'safe-framework'
 import FlatButton from 'material-ui/FlatButton'
 import MenuItem from 'material-ui/MenuItem'
 import Papa from 'papaparse'
+import {sendMetrics} from '../modules/metrics'
 import {toggleDialog} from '../modules/dialog'
 import {header, main} from '../styles/common'
 import React, {Component, PropTypes} from 'react'
@@ -24,7 +25,8 @@ class Upload extends Component {
   static propTypes = {
     dialogOpen: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
-    uploadDataTypes: PropTypes.object.isRequired
+    uploadDataTypes: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
   }
 
   constructor (props) {
@@ -40,9 +42,17 @@ class Upload extends Component {
   }
 
   componentWillUnmount () {
-    const {dispatch} = this.props
+    const {dispatch, user} = this.props
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Upload',
+        user: user.data.username
+      }
+    }
 
     dispatch(resetUploadDataTypes())
+    dispatch(sendMetrics([event]))
   }
 
   shouldRejectFile (file) {
@@ -171,6 +181,7 @@ class Upload extends Component {
 }
 
 export default connect((state) => ({
-  uploadDataTypes: state.uploadDataTypes,
-  dialogOpen: state.dialog
+  dialogOpen: state.dialog,
+  user: state.user,
+  uploadDataTypes: state.uploadDataTypes
 }))(Upload)

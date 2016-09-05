@@ -8,6 +8,7 @@ import FilterCriteria from './FilterCriteria'
 import {Hydrateable} from '../decorators'
 import RaisedButton from 'material-ui/RaisedButton'
 import {SelectField} from './SelectField'
+import {sendMetrics} from '../modules/metrics'
 import {setSource} from '../modules/source'
 import Tab from 'material-ui/Tabs/Tab'
 import Tabs from 'material-ui/Tabs/Tabs'
@@ -51,7 +52,8 @@ class Search extends Component {
     filters: PropTypes.array.isRequired,
     searchResults: PropTypes.object.isRequired,
     source: PropTypes.string.isRequired,
-    sources: PropTypes.object.isRequired
+    sources: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
   }
 
   constructor (props) {
@@ -76,11 +78,19 @@ class Search extends Component {
   }
 
   componentWillMount () {
-    const {dispatch, searchResults} = this.props
-
+    const {dispatch, searchResults, user} = this.props
+    const event = {
+      group: 'pageView',
+      attributes: {
+        page: 'Search',
+        user: user.data.username
+      }
+    }
+    
     this.updateColumns(searchResults)
 
     dispatch(fetchSources())
+    dispatch(sendMetrics([event]))
   }
 
   componentWillReceiveProps (nextProps) {
@@ -192,5 +202,6 @@ export default connect((state) => ({
   mapResults: state.mapResults,
   searchResults: state.searchResults,
   source: state.source,
-  sources: state.sources
+  sources: state.sources,
+  user: state.user
 }))(Search)
